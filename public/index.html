@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Courtroom Trading System</title>
+    <link rel="stylesheet" href="/public/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">Decision Intelligence Console</p>
+        <h1>Courtroom Trading System</h1>
+        <p class="lede">
+          Bull and bear agents argue from structured evidence. A deterministic judge scores the case.
+        </p>
+      </section>
+
+      <section class="grid">
+        <form id="decision-form" class="panel form-panel">
+          <div class="panel-header">
+            <h2>Market Snapshot</h2>
+            <button type="submit" id="submit-button">Run Case</button>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              <span>Price</span>
+              <input name="price" type="number" step="0.01" value="102" required />
+            </label>
+            <label>
+              <span>RSI</span>
+              <input name="rsi" type="number" min="0" max="100" step="0.1" value="28" required />
+            </label>
+            <label>
+              <span>MA20</span>
+              <input name="ma20" type="number" step="0.01" value="100" required />
+            </label>
+            <label>
+              <span>MA50</span>
+              <input name="ma50" type="number" step="0.01" value="95" required />
+            </label>
+            <label>
+              <span>Trend</span>
+              <select name="trend">
+                <option>UPTREND</option>
+                <option>DOWNTREND</option>
+                <option>RANGE</option>
+              </select>
+            </label>
+            <label>
+              <span>Volume</span>
+              <select name="volume_strength">
+                <option>LOW</option>
+                <option>MODERATE</option>
+                <option>HIGH</option>
+              </select>
+            </label>
+            <label>
+              <span>RSI Signal</span>
+              <select name="rsi_signal">
+                <option>OVERSOLD</option>
+                <option>NEUTRAL</option>
+                <option>OVERBOUGHT</option>
+              </select>
+            </label>
+            <label>
+              <span>Trend Strength</span>
+              <select name="trend_strength">
+                <option>WEAK</option>
+                <option selected>MODERATE</option>
+                <option>STRONG</option>
+              </select>
+            </label>
+            <label class="full-width">
+              <span>MA Alignment</span>
+              <select name="ma_alignment">
+                <option>BULLISH</option>
+                <option>NEUTRAL</option>
+                <option>BEARISH</option>
+              </select>
+            </label>
+          </div>
+        </form>
+
+        <section class="panel result-panel">
+          <div class="panel-header">
+            <h2>Verdict</h2>
+            <span id="provider-badge" class="badge">loading</span>
+          </div>
+          <div id="summary" class="summary-card muted">Run the first case to see the scored verdict.</div>
+          <div class="columns">
+            <div>
+              <h3>Bull Arguments</h3>
+              <div id="bull-arguments" class="stack"></div>
+            </div>
+            <div>
+              <h3>Bear Arguments</h3>
+              <div id="bear-arguments" class="stack"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Raw Decision Payload</h2>
+          <button type="button" id="copy-button">Copy JSON</button>
+        </div>
+        <pre id="raw-output" class="raw-output">Waiting for analysis...</pre>
+      </section>
+    </main>
+
+    <script src="/public/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+FROM mongo:7
+
+ENV MONGO_INITDB_DATABASE=courtroom_trading
+
+EXPOSE 27017

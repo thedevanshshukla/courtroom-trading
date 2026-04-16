@@ -1,0 +1,42 @@
+[
+  {
+    "features_hash": "9cca57233339550b",
+    "decision": "TRADE",
+    "bull_score": 0.61,
+    "bear_score": 0.225,
+    "winning_side": "BULL",
+    "outcome": "PENDING",
+    "record_id": "e9066f1870f54f279d70c02c8e886928",
+    "created_at": "2026-04-14T09:56:57.687976Z"
+  },
+  {
+    "features_hash": "9cca57233339550b",
+    "decision": "TRADE",
+    "bull_score": 1.22,
+    "bear_score": 0.0,
+    "winning_side": "BULL",
+    "outcome": "PENDING",
+    "record_id": "22cc2fcdd37046788940445ae4e77879",
+    "created_at": "2026-04-14T09:56:57.687984Z"
+  },
+  {
+    "features_hash": "9cca57233339550b",
+    "decision": "TRADE",
+    "bull_score": 1.22,
+    "bear_score": 0.0,
+    "winning_side": "BULL",
+    "outcome": "PENDING",
+    "record_id": "f644b218bc1749d3bac7b1c3d8bcc093",
+    "created_at": "2026-04-14T09:56:57.687761Z"
+  },
+  {
+    "features_hash": "9cca57233339550b",
+    "decision": "TRADE",
+    "bull_score": 0.976,
+    "bear_score": 0.09,
+    "winning_side": "BULL",
+    "outcome": "PENDING",
+    "record_id": "00e0d2c9802244ab8f85ffa79cd0a7a5",
+    "created_at": "2026-04-14T09:57:37.347685Z"
+  }
+]

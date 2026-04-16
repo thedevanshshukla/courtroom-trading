@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Courtroom Trading - AI-Powered Market Analysis</title>
+    <link rel="stylesheet" href="./styles.css?v=20260416-3" />
+    <script src="./config.js?v=20260416-2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+  </head>
+  <body data-theme="aurora-day" data-page="home">
+    <!-- Home Page -->
+    <div class="page-container" id="home-page">
+      <nav class="navbar">
+        <div class="navbar-content">
+          <div class="logo">
+            <span class="logo-icon">CT</span>
+            <span class="logo-text">Courtroom Trading</span>
+          </div>
+          <div class="nav-actions">
+            <button id="theme-toggle-home" type="button" class="nav-button theme-toggle" aria-label="Toggle theme">☾</button>
+            <button id="login-button-home" type="button" class="nav-button primary">Sign In</button>
+          </div>
+        </div>
+      </nav>
+
+      <section class="home-hero">
+        <div class="hero-content">
+          <h1>AI-Powered Market Analysis</h1>
+          <p class="hero-subtitle">Bull vs Bear Arguments, Real-Time Verdicts, Powered by Intelligent Agents</p>
+          <div class="hero-features">
+            <div class="feature-item">
+              <span class="feature-icon">01</span>
+              <span>AI Agents Run Analysis</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">02</span>
+              <span>Real Data & Graphs</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">03</span>
+              <span>Instant Verdicts</span>
+            </div>
+          </div>
+          <button id="get-started-button" type="button" class="btn-large">Get Started Now</button>
+          <p class="disclaimer-home">Agents may make mistakes. Not a SEBI registered broker. For educational purposes only.</p>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orbit one"></div>
+          <div class="hero-orbit two"></div>
+          <div class="hero-chart-placeholder">
+            <div class="hero-grid"></div>
+            <svg class="hero-line" viewBox="0 0 220 220" width="100%" height="100%" aria-hidden="true">
+              <polyline points="12,186 34,156 52,148 76,128 96,132 126,96 150,84 178,72 206,46"
+                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="12,196 34,188 52,176 76,164 96,168 126,148 150,132 178,112 206,96"
+                fill="none" stroke="color-mix(in srgb, currentColor 45%, transparent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="features-section">
+        <div class="container">
+          <h2>Why Courtroom Trading?</h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <h3>Dual Agent System</h3>
+              <p>Bull and Bear agents argue different market perspectives with evidence-based reasoning</p>
+            </div>
+            <div class="feature-card">
+              <h3>Real-Time Data</h3>
+              <p>Live market data analysis with technical indicators and historical tracking</p>
+            </div>
+            <div class="feature-card">
+              <h3>Memory Storage</h3>
+              <p>Agents learn from outcomes to improve decision-making over time</p>
+            </div>
+            <div class="feature-card">
+              <h3>Transparent Verdicts</h3>
+              <p>Clear reasoning with confidence scores and argument breakdown</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="container">
+          <p>Made by <strong>Devansh</strong></p>
+          <p class="footer-disclaimer">Agents can make mistakes. Not SEBI registered. Educational purposes only.</p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Auth Page -->
+    <div class="page-container hidden" id="auth-page">
+      <nav class="navbar">
+        <div class="navbar-content">
+          <div class="logo">
+            <span class="logo-icon">CT</span>
+            <span class="logo-text">Courtroom Trading</span>
+          </div>
+          <div class="nav-actions">
+            <button id="theme-toggle-auth" type="button" class="nav-button theme-toggle" aria-label="Toggle theme">☾</button>
+            <button id="back-to-home-button" type="button" class="nav-button">← Back</button>
+          </div>
+        </div>
+      </nav>
+
+      <section class="auth-container">
+        <div class="auth-box">
+          <h1>Join Courtroom Trading</h1>
+          <p class="auth-subtitle">Sign in with your account to begin.</p>
+
+          <div class="auth-choice-card">
+            <div class="auth-action-stack">
+              <div id="google-login-container" class="google-slot">
+                <div id="google-login-slot"></div>
+              </div>
+              <div class="auth-divider"><span>or</span></div>
+              <button id="email-auth-trigger" type="button" class="btn-secondary wide-btn">Sign in by email</button>
+            </div>
+          </div>
+
+          <form id="manual-auth-form" class="form-stack hidden">
+            <div class="form-group" id="name-group" style="display: none;">
+              <label for="manual-name">Full Name</label>
+              <input id="manual-name" name="name" type="text" autocomplete="name" placeholder="Enter your full name" />
+            </div>
+            <div class="form-group">
+              <label for="manual-email">Email Address</label>
+              <input id="manual-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+            </div>
+            <div class="form-group">
+              <label for="manual-password">Password</label>
+              <div class="password-input-group">
+                <input id="manual-password" name="password" type="password" autocomplete="current-password" required minlength="8" placeholder="Minimum 8 characters" />
+                <button type="button" class="password-toggle" id="toggle-password" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <div class="form-group" id="confirm-password-group" style="display: none;">
+              <label for="manual-password-confirm">Confirm Password</label>
+              <div class="password-input-group">
+                <input id="manual-password-confirm" name="password_confirm" type="password" required minlength="8" placeholder="Re-enter your password" />
+                <button type="button" class="password-toggle" id="toggle-password-confirm" aria-label="Show password">👁</button>
+              </div>
+            </div>
+            <button id="manual-auth-submit" type="submit" class="btn-submit">Login</button>
+          </form>
+
+          <p class="auth-switch-inline">
+            <span id="auth-switch-prefix">New user?</span>
+            <button id="auth-switch-link" type="button" class="auth-inline-link">Sign up here</button>
+          </p>
+
+          <p id="manual-auth-feedback" class="auth-note" aria-live="polite"></p>
+
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="container">
+          <p>Made by <strong>Devansh</strong></p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div class="page-container hidden" id="dashboard-page">
+      <nav class="navbar">
+        <div class="navbar-content">
+          <div class="logo">
+            <span class="logo-icon">CT</span>
+            <span class="logo-text">Courtroom Trading</span>
+          </div>
+          <div class="nav-actions">
+            <button id="theme-toggle-dashboard" type="button" class="nav-button theme-toggle" aria-label="Toggle theme">☾</button>
+            <div id="user-info" class="user-info hidden"></div>
+            <button id="logout-button" type="button" class="nav-button logout-btn hidden">Logout</button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="dashboard-container">
+        <!-- Left Sidebar -->
+        <aside class="dashboard-sidebar">
+          <div class="sidebar-section">
+            <h3>Market Input</h3>
+            <div class="input-mode-switch" role="tablist" aria-label="Input mode">
+              <button id="mode-manual" class="auth-subtab active" type="button" role="tab">Sample Input</button>
+              <button id="mode-realtime" class="auth-subtab" type="button" role="tab">Realtime Stock</button>
+            </div>
+
+            <div id="realtime-panel" class="realtime-panel hidden">
+              <div class="form-group">
+                <label for="stock-search">Search Stock</label>
+                <input id="stock-search" type="text" placeholder="Type company or symbol" />
+              </div>
+              <button id="search-stock-button" type="button" class="btn-secondary wide-btn">Search</button>
+              <label for="stock-results" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; display: block;">Results (Symbol - Company Name)</label>
+              <select id="stock-results" class="stock-results" size="6"></select>
+              <button id="use-stock-button" type="button" class="btn-submit">Use Selected Stock</button>
+              <p id="realtime-feedback" class="muted"></p>
+
+              <!-- Investment Preferences (shown after stock loaded) -->
+              <div id="investment-prefs" class="investment-prefs hidden">
+                <hr style="margin: 12px 0; opacity: 0.2;">
+                <h4 style="margin: 10px 0 8px; font-size: 0.95rem;">Investment Details</h4>
+                
+                <div class="form-group">
+                  <label for="investment-quantity">Quantity to Buy</label>
+                  <input id="investment-quantity" type="number" min="1" step="1" placeholder="Number of shares" value="100" />
+                </div>
+
+                <div class="form-group">
+                  <label for="investment-purpose">Investment Purpose</label>
+                  <select id="investment-purpose">
+                    <option value="SHORT_TERM">Short Term (Days to Weeks)</option>
+                    <option value="MID_TERM">Mid Term (Weeks to Months)</option>
+                    <option value="LONG_TERM" selected>Long Term (Months to Years)</option>
+                    <option value="SWING_TRADE">Swing Trading</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="investment-budget">Budget (₹)</label>
+                  <input id="investment-budget" type="number" min="0" step="100" placeholder="Total investment amount" />
+                  <p id="budget-feedback" class="muted budget-feedback">Budget should cover quantity x expected price range.</p>
+                </div>
+
+                <div class="form-group">
+                  <label for="investment-risk">Risk Tolerance</label>
+                  <select id="investment-risk">
+                    <option value="LOW">Low (Conservative)</option>
+                    <option value="MODERATE" selected>Moderate (Balanced)</option>
+                    <option value="HIGH">High (Aggressive)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <form id="decision-form" class="form-stack">
+              <div class="form-group">
+                <label>Price</label>
+                <input name="price" type="number" step="0.01" value="102" required />
+              </div>
+              <div class="form-group">
+                <label>RSI</label>
+                <input name="rsi" type="number" min="0" max="100" step="0.1" value="28" required />
+              </div>
+              <div class="form-group">
+                <label>MA20</label>
+                <input name="ma20" type="number" step="0.01" value="100" required />
+              </div>
+              <div class="form-group">
+                <label>MA50</label>
+                <input name="ma50" type="number" step="0.01" value="95" required />
+              </div>
+              <div class="form-group">
+                <label>Trend</label>
+                <select name="trend">
+                  <option>UPTREND</option>
+                  <option>DOWNTREND</option>
+                  <option>RANGE</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Volume</label>
+                <select name="volume_strength">
+                  <option>LOW</option>
+                  <option>MODERATE</option>
+                  <option>HIGH</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>RSI Signal</label>
+                <select name="rsi_signal">
+                  <option>OVERSOLD</option>
+                  <option>NEUTRAL</option>
+                  <option>OVERBOUGHT</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Trend Strength</label>
+                <select name="trend_strength">
+                  <option>WEAK</option>
+                  <option selected>MODERATE</option>
+                  <option>STRONG</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>MA Alignment</label>
+                <select name="ma_alignment">
+                  <option>BULLISH</option>
+                  <option>NEUTRAL</option>
+                  <option>BEARISH</option>
+                </select>
+              </div>
+            </form>
+            <button type="submit" form="decision-form" id="submit-button" class="btn-submit">Analyze Market</button>
+          </div>
+
+          <div class="sidebar-section">
+            <h3>Info</h3>
+            <div class="info-card">
+              <p class="info-label">Provider</p>
+              <p id="provider-badge" class="info-value">...</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+          <!-- Summary Section -->
+          <section class="section">
+            <h2>Verdict & Confidence</h2>
+            <div id="summary" class="summary-large">
+              <p class="muted">Run an analysis to see the verdict and confidence score.</p>
+            </div>
+          </section>
+
+          <!-- Charts Section -->
+          <section class="section">
+            <h2>Market Data Charts</h2>
+            <div class="charts-grid">
+              <div class="chart-card" data-chart="price" title="Click to expand chart">
+                <h3 id="price-chart-title">Price Movement</h3>
+                <div class="chart-container">
+                  <canvas id="price-chart"></canvas>
+                </div>
+              </div>
+              <div class="chart-card" data-chart="rsi" title="Click to expand chart">
+                <h3 id="rsi-chart-title">RSI Indicator</h3>
+                <div class="chart-container">
+                  <canvas id="rsi-chart"></canvas>
+                </div>
+              </div>
+              <div class="chart-card" data-chart="ma" title="Click to expand chart">
+                <h3 id="ma-chart-title">Moving Averages</h3>
+                <div class="chart-container">
+                  <canvas id="ma-chart"></canvas>
+                </div>
+              </div>
+              <div class="chart-card" data-chart="volume" title="Click to expand chart">
+                <h3 id="volume-chart-title">Volume Analysis</h3>
+                <div class="chart-container">
+                  <canvas id="volume-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="realtime-insights" class="section realtime-insights-panel">
+            <h2>Realtime Price Range Details</h2>
+            <div id="realtime-details" class="muted">Load a stock to see last close, 10-day min/max, and 30-day min/max.</div>
+
+            <div class="custom-range-box">
+              <h5>Custom Date Range Min/Max</h5>
+              <div class="custom-range-grid">
+                <div class="form-group">
+                  <label for="custom-start-date">Start Date</label>
+                  <input id="custom-start-date" type="date" />
+                </div>
+                <div class="form-group">
+                  <label for="custom-end-date">End Date</label>
+                  <input id="custom-end-date" type="date" />
+                </div>
+              </div>
+              <button id="custom-range-calc" type="button" class="btn-secondary">Calculate Range</button>
+              <p id="custom-range-result" class="muted">Select dates to calculate min/max.</p>
+            </div>
+          </section>
+
+          <!-- Arguments Section -->
+          <section class="section">
+            <h2>Bull vs Bear Arguments</h2>
+            <div id="arguments-panel" class="arguments-container hidden">
+              <div class="argument-column">
+                <h3 class="bull-header">Bull Case</h3>
+                <div id="bull-arguments" class="arguments-list"></div>
+              </div>
+              <div class="argument-column">
+                <h3 class="bear-header">Bear Case</h3>
+                <div id="bear-arguments" class="arguments-list"></div>
+              </div>
+            </div>
+            <p id="arguments-note" class="muted">Arguments stay hidden until you click Show Details.</p>
+          </section>
+
+          <!-- Agent Details Section -->
+          <section class="section">
+            <div class="section-header">
+              <h2>Agent Details & Reasoning</h2>
+              <button id="toggle-details" class="btn-toggle">Show Details</button>
+            </div>
+            <div id="agent-details" class="agent-details hidden">
+              <pre id="raw-output" class="code-block">Run an analysis to see full agent reasoning...</pre>
+              <div class="button-group">
+                <button id="copy-button" class="btn-secondary">Copy Details</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- History Section -->
+          <section class="section">
+            <div class="section-header">
+              <h2>Recent Analysis (Last 10)</h2>
+              <div class="button-group">
+                <button id="refresh-history" class="btn-secondary">Refresh</button>
+                <button id="clear-history" class="btn-secondary" style="color: var(--danger); border-color: var(--danger);">Clear All</button>
+              </div>
+            </div>
+            <div id="history-list" class="history-grid">
+              <p class="muted">No history yet. Run an analysis to get started.</p>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer class="footer">
+        <div class="container">
+          <p>Made by <strong>Devansh</strong></p>
+          <p class="footer-disclaimer">Agents can make mistakes. Not SEBI registered. Educational purposes only.</p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="./app.js?v=20260416-8"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: courtroom-trading-system
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: USE_GROQ
+        value: "true"
+      - key: USE_MONGODB
+        value: "true"

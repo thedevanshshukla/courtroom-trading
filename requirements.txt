@@ -1,0 +1,8 @@
+fastapi==0.115.8
+google-auth==2.38.0
+openai==1.63.2
+PyJWT==2.10.1
+pymongo==4.11.1
+pydantic==2.10.6
+requests==2.32.3
+uvicorn==0.34.0
