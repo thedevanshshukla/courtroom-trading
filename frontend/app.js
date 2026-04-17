@@ -51,6 +51,100 @@ const charts = {
 };
 
 let googleRenderTimer = null;
+const heroChartRuntime = {
+  chart: null,
+  data: [],
+  drawTimer: null,
+  liveTimer: null,
+  resizeObserver: null
+};
+
+const heroTradingScenePlugin = {
+  id: "heroTradingScenePlugin",
+  afterDatasetsDraw(chart) {
+    const candles = heroChartRuntime.data;
+    if (!candles.length) {
+      return;
+    }
+
+    const theme = getHeroChartTheme();
+    const { ctx, chartArea, scales } = chart;
+    const priceScale = scales.price;
+    const xScale = scales.x;
+    if (!priceScale || !xScale) {
+      return;
+    }
+
+    const spacing = candles.length > 1
+      ? Math.abs(xScale.getPixelForValue(1) - xScale.getPixelForValue(0))
+      : 12;
+    const candleWidth = Math.max(4, Math.min(11, spacing * 0.44));
+
+    ctx.save();
+    candles.forEach((candle, index) => {
+      const x = xScale.getPixelForValue(index);
+      const openY = priceScale.getPixelForValue(candle.open);
+      const closeY = priceScale.getPixelForValue(candle.close);
+      const highY = priceScale.getPixelForValue(candle.high);
+      const lowY = priceScale.getPixelForValue(candle.low);
+      const bullish = candle.close >= candle.open;
+      const candleColor = bullish ? theme.bull : theme.bear;
+      const bodyTop = Math.min(openY, closeY);
+      const bodyHeight = Math.max(Math.abs(closeY - openY), 1.6);
+      const bodyWidth = candleWidth;
+
+      ctx.strokeStyle = candleColor;
+      ctx.fillStyle = candleColor;
+      ctx.lineWidth = 1.15;
+      ctx.beginPath();
+      ctx.moveTo(x, highY);
+      ctx.lineTo(x, lowY);
+      ctx.stroke();
+
+      if (bullish) {
+        ctx.fillRect(x - bodyWidth / 2, bodyTop, bodyWidth, bodyHeight);
+      } else {
+        ctx.lineWidth = 1.25;
+        ctx.strokeRect(x - bodyWidth / 2, bodyTop, bodyWidth, bodyHeight);
+        ctx.fillRect(x - bodyWidth / 2, bodyTop + 1, bodyWidth, Math.max(bodyHeight - 2, 1));
+      }
+    });
+
+    const last = candles[candles.length - 1];
+    const previous = candles[candles.length - 2] || last;
+    const lastX = xScale.getPixelForValue(candles.length - 1);
+    const lastY = priceScale.getPixelForValue(last.close);
+    const pulse = 0.65 + 0.35 * Math.sin(Date.now() / 260);
+    const change = last.close - previous.close;
+    const changePercent = previous.close !== 0 ? (change / previous.close) * 100 : 0;
+    const isUp = change >= 0;
+    const label = `${last.close.toFixed(2)} ${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${changePercent.toFixed(2)}%)`;
+    const labelColor = isUp ? theme.bull : theme.bear;
+
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.14)";
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, lastY);
+    ctx.lineTo(chartArea.right, lastY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = `rgba(34, 197, 94, ${0.55 + pulse * 0.25})`;
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 4.2 + pulse * 1.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.88)";
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    ctx.font = '700 12px "Space Grotesk", sans-serif';
+    ctx.textAlign = "right";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = labelColor;
+    ctx.fillText(label, chartArea.right - 4, chartArea.top + 6);
+    ctx.restore();
+  }
+};
 
 const elements = {
   homePage: document.getElementById("home-page"),
@@ -131,13 +225,16 @@ const elements = {
   priceChartTitle: document.getElementById("price-chart-title"),
   rsiChartTitle: document.getElementById("rsi-chart-title"),
   maChartTitle: document.getElementById("ma-chart-title"),
-  volumeChartTitle: document.getElementById("volume-chart-title")
+  volumeChartTitle: document.getElementById("volume-chart-title"),
+
+  heroTradingChart: document.getElementById("hero-trading-chart")
 };
 
 function setTheme(theme) {
   document.body.dataset.theme = theme;
   localStorage.setItem("courtroom_theme", theme);
   updateThemeButtons();
+  applyHeroTradingChartTheme();
 }
 
 function cycleTheme() {
@@ -161,6 +258,338 @@ function updateThemeButtons() {
     button.textContent = icon;
     button.setAttribute("title", isDark ? "Switch to light theme" : "Switch to dark theme");
   });
+}
+
+function getHeroChartTheme() {
+  const isDark = document.body.dataset.theme === "midnight-lagoon";
+  if (isDark) {
+    return {
+      text: "rgba(157, 193, 219, 0.66)",
+      grid: "rgba(157, 193, 219, 0.12)",
+      bull: "#22c55e",
+      bear: "#ef4444",
+      maFast: MARKET_COLORS.maFast
+    };
+  }
+  return {
+    text: "rgba(113, 88, 75, 0.72)",
+    grid: "rgba(88, 55, 33, 0.12)",
+    bull: "#14b86c",
+    bear: "#e25555",
+    maFast: MARKET_COLORS.maFast
+  };
+}
+
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function roundToTwo(value) {
+  return Math.round(value * 100) / 100;
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, height / 2, width / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function buildHeroMockCandles(count) {
+  const candles = [];
+  const intervalSeconds = 60;
+  const startTime = Math.floor(Date.now() / 1000) - count * intervalSeconds;
+  let prevClose = 206.4;
+
+  for (let i = 0; i < count; i += 1) {
+    const open = prevClose + randomBetween(-0.22, 0.22);
+    const wave = Math.sin(i / 5.3) * 0.12;
+    const drift = randomBetween(-0.45, 0.45) + wave;
+    const close = open + drift;
+    const high = Math.max(open, close) + randomBetween(0.05, 0.34);
+    const low = Math.min(open, close) - randomBetween(0.05, 0.34);
+    const volume = Math.round(1200 + Math.abs(close - open) * 4000 + randomBetween(150, 1100));
+
+    candles.push({
+      time: startTime + i * intervalSeconds,
+      open: roundToTwo(open),
+      high: roundToTwo(high),
+      low: roundToTwo(low),
+      close: roundToTwo(close),
+      volume
+    });
+
+    prevClose = close;
+  }
+
+  return candles;
+}
+
+function buildHeroMovingAverageData(candles, period = 8) {
+  return candles.map((candle, index) => {
+    const start = Math.max(0, index - period + 1);
+    const window = candles.slice(start, index + 1);
+    const average = window.reduce((sum, item) => sum + item.close, 0) / window.length;
+    return {
+      x: index,
+      y: roundToTwo(average)
+    };
+  });
+}
+
+function generateNextHeroCandle(previous, index) {
+  const open = previous.close + randomBetween(-0.18, 0.18);
+  const wave = Math.sin(index / 4.7) * 0.1;
+  const close = open + randomBetween(-0.4, 0.4) + wave;
+  const high = Math.max(open, close) + randomBetween(0.05, 0.3);
+  const low = Math.min(open, close) - randomBetween(0.05, 0.3);
+  const volume = Math.round(1200 + Math.abs(close - open) * 4200 + randomBetween(120, 900));
+
+  return {
+    time: previous.time + 60,
+    open: roundToTwo(open),
+    high: roundToTwo(high),
+    low: roundToTwo(low),
+    close: roundToTwo(close),
+    volume
+  };
+}
+
+function clearHeroTradingChartTimers() {
+  if (heroChartRuntime.drawTimer) {
+    clearInterval(heroChartRuntime.drawTimer);
+    heroChartRuntime.drawTimer = null;
+  }
+  if (heroChartRuntime.liveTimer) {
+    clearInterval(heroChartRuntime.liveTimer);
+    heroChartRuntime.liveTimer = null;
+  }
+}
+
+function destroyHeroTradingChart() {
+  clearHeroTradingChartTimers();
+  if (heroChartRuntime.resizeObserver && elements.heroTradingChart) {
+    heroChartRuntime.resizeObserver.unobserve(elements.heroTradingChart);
+  }
+  heroChartRuntime.resizeObserver = null;
+  if (heroChartRuntime.chart) {
+    heroChartRuntime.chart.destroy();
+  }
+  heroChartRuntime.chart = null;
+  heroChartRuntime.data = [];
+}
+
+function applyHeroTradingChartTheme() {
+  if (!heroChartRuntime.chart) {
+    return;
+  }
+
+  const theme = getHeroChartTheme();
+  heroChartRuntime.chart.options.scales.x.grid.color = theme.grid;
+  heroChartRuntime.chart.options.scales.price.grid.color = theme.grid;
+  heroChartRuntime.chart.options.scales.x.ticks.color = theme.text;
+  heroChartRuntime.chart.options.scales.price.ticks.color = theme.text;
+
+  if (heroChartRuntime.chart.data?.datasets?.length) {
+    heroChartRuntime.chart.data.datasets[0].borderColor = theme.maFast;
+    heroChartRuntime.chart.data.datasets[0].backgroundColor = (context) => {
+      const chart = context.chart;
+      const { chartArea } = chart;
+      if (!chartArea) {
+        return "rgba(16, 185, 129, 0.06)";
+      }
+      const gradient = chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, "rgba(16, 185, 129, 0.15)");
+      gradient.addColorStop(1, "rgba(16, 185, 129, 0.01)");
+      return gradient;
+    };
+  }
+
+  heroChartRuntime.chart.update("none");
+}
+
+function getHeroChartBounds(candles) {
+  const lows = candles.map((candle) => candle.low);
+  const highs = candles.map((candle) => candle.high);
+  return {
+    minPrice: Math.min(...lows) - 0.2,
+    maxPrice: Math.max(...highs) + 0.22
+  };
+}
+
+function initializeHeroTradingChart() {
+  const container = elements.heroTradingChart;
+  if (!container || typeof window.Chart !== "function") {
+    return;
+  }
+
+  destroyHeroTradingChart();
+
+  const ctx = container.getContext("2d");
+  if (!ctx) {
+    return;
+  }
+
+  const chartTheme = getHeroChartTheme();
+
+  const fullData = buildHeroMockCandles(72);
+  const initialCount = 16;
+  const visibleData = fullData.slice(0, initialCount);
+  let index = initialCount;
+
+  heroChartRuntime.data = visibleData;
+
+  heroChartRuntime.chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      datasets: [
+        {
+          label: "Moving Avg",
+          data: buildHeroMovingAverageData(visibleData, 8),
+          borderColor: chartTheme.maFast,
+          backgroundColor: (context) => {
+            const chart = context.chart;
+            const { chartArea } = chart;
+            if (!chartArea) {
+              return "rgba(16, 185, 129, 0.04)";
+            }
+            const gradient = chart.ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            gradient.addColorStop(0, "rgba(16, 185, 129, 0.08)");
+            gradient.addColorStop(1, "rgba(16, 185, 129, 0.01)");
+            return gradient;
+          },
+          fill: false,
+          tension: 0.36,
+          borderWidth: 1.75,
+          borderDash: [5, 4],
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          pointHitRadius: 4,
+          cubicInterpolationMode: "monotone",
+          yAxisID: "price"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      normalized: true,
+      animation: {
+        duration: 520,
+        easing: "easeOutQuart"
+      },
+      interaction: {
+        intersect: false,
+        mode: "index"
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          enabled: false
+        }
+      },
+      scales: {
+        x: {
+          type: "linear",
+          display: true,
+          min: 0,
+          max: Math.max(visibleData.length - 1, 1),
+          grid: {
+            color: chartTheme.grid,
+            borderColor: chartTheme.grid,
+            drawTicks: false,
+            drawBorder: false
+          },
+          ticks: {
+            display: false
+          }
+        },
+        price: {
+          type: "linear",
+          display: true,
+          position: "right",
+          min: getHeroChartBounds(visibleData).minPrice,
+          max: getHeroChartBounds(visibleData).maxPrice,
+          grid: {
+            color: chartTheme.grid,
+            drawTicks: false,
+            drawBorder: false
+          },
+          ticks: {
+            display: false
+          }
+        },
+      }
+    }
+    ,
+    plugins: [heroTradingScenePlugin]
+  });
+
+  // Slower progressive reveal so the chart doesn't feel rushed on first load.
+  heroChartRuntime.drawTimer = setInterval(() => {
+    if (index >= fullData.length) {
+      clearHeroTradingChartTimers();
+      heroChartRuntime.data = fullData.slice(-48);
+      heroChartRuntime.chart.data.datasets[0].data = buildHeroMovingAverageData(heroChartRuntime.data, 8);
+      heroChartRuntime.chart.options.scales.x.max = Math.max(heroChartRuntime.data.length - 1, 1);
+      const heroBounds = getHeroChartBounds(heroChartRuntime.data);
+      heroChartRuntime.chart.options.scales.price.min = heroBounds.minPrice;
+      heroChartRuntime.chart.options.scales.price.max = heroBounds.maxPrice;
+      heroChartRuntime.chart.update();
+
+      heroChartRuntime.liveTimer = setInterval(() => {
+        if (!heroChartRuntime.chart) {
+          return;
+        }
+        const previous = heroChartRuntime.data[heroChartRuntime.data.length - 1];
+        const nextCandle = generateNextHeroCandle(previous, heroChartRuntime.data.length);
+        heroChartRuntime.data.push(nextCandle);
+        if (heroChartRuntime.data.length > 48) {
+          heroChartRuntime.data.shift();
+        }
+        heroChartRuntime.chart.data.datasets[0].data = buildHeroMovingAverageData(heroChartRuntime.data, 8);
+        heroChartRuntime.chart.options.scales.x.max = Math.max(heroChartRuntime.data.length - 1, 1);
+        const heroBounds = getHeroChartBounds(heroChartRuntime.data);
+        heroChartRuntime.chart.options.scales.price.min = heroBounds.minPrice;
+        heroChartRuntime.chart.options.scales.price.max = heroBounds.maxPrice;
+        heroChartRuntime.chart.update();
+      }, 1100);
+      return;
+    }
+
+    visibleData.push(fullData[index]);
+    index += 1;
+    const windowed = visibleData.slice(-48);
+    heroChartRuntime.data = windowed;
+    heroChartRuntime.chart.data.datasets[0].data = buildHeroMovingAverageData(windowed, 8);
+    heroChartRuntime.chart.options.scales.x.max = Math.max(windowed.length - 1, 1);
+    const heroBounds = getHeroChartBounds(windowed);
+    heroChartRuntime.chart.options.scales.price.min = heroBounds.minPrice;
+    heroChartRuntime.chart.options.scales.price.max = heroBounds.maxPrice;
+    heroChartRuntime.chart.update();
+  }, 80);
+
+  const resize = () => {
+    if (!heroChartRuntime.chart || !container) {
+      return;
+    }
+    const width = Math.max(container.clientWidth, 180);
+    const height = Math.max(container.clientHeight, 120);
+    heroChartRuntime.chart.resize(width, height);
+  };
+
+  if (typeof ResizeObserver !== "undefined") {
+    heroChartRuntime.resizeObserver = new ResizeObserver(resize);
+    heroChartRuntime.resizeObserver.observe(container);
+  }
+
+  resize();
 }
 
 function goToPage(pageId) {
@@ -1770,6 +2199,7 @@ function bindEvents() {
 
 async function bootstrap() {
   initializeTheme();
+  initializeHeroTradingChart();
   setManualMode("login");
   setInputMode("manual");
 

@@ -381,8 +381,8 @@ body {
 
 .hero-chart-placeholder {
   width: 100%;
-  max-width: 360px;
-  aspect-ratio: 1;
+  max-width: 400px;
+  aspect-ratio: 1.14;
   background: color-mix(in srgb, var(--surface-strong) 86%, transparent);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -398,19 +398,93 @@ body {
   box-sizing: border-box;
 }
 
-.hero-grid {
+.hero-trading-chart {
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px);
-  background-size: 22px 22px;
-  opacity: 0.36;
+  inset: 10px 10px 36px 10px;
+  border-radius: calc(var(--radius-lg) - 4px);
+  overflow: hidden;
+  z-index: 2;
+  width: calc(100% - 20px);
+  height: calc(100% - 46px);
+  display: block;
+  background: transparent;
 }
 
-.hero-line {
-  position: relative;
+.hero-current-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  border: 1px solid color-mix(in srgb, #ffffff 70%, transparent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 45%, transparent);
+  pointer-events: none;
+  z-index: 5;
+  animation: heroDotPulse 1.5s ease-in-out infinite;
+}
+
+.hero-chart-placeholder::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 20%, color-mix(in srgb, var(--primary) 8%, transparent) 48%, transparent 78%);
+  transform: translateX(-100%);
+  animation: chartSweep 8s linear infinite;
+  pointer-events: none;
   z-index: 1;
+}
+
+.hero-market-tape {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  z-index: 4;
+  overflow: hidden;
+  border-top: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  background: color-mix(in srgb, var(--surface-strong) 92%, transparent);
+}
+
+.hero-market-track {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: max-content;
+  white-space: nowrap;
+  padding-inline: 14px;
+  animation: tapeScroll 24s linear infinite;
+}
+
+.hero-market-track span {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.hero-market-track strong {
+  color: var(--success);
+}
+
+.hero-market-track span:nth-child(3n) strong {
+  color: var(--primary);
+}
+
+.hero-market-track span:nth-child(4n) strong {
+  color: color-mix(in srgb, var(--success) 72%, var(--primary));
+}
+
+.hero-market-track span::before {
+  content: "•";
+  margin-right: 8px;
+  color: color-mix(in srgb, var(--primary) 62%, var(--text-muted));
+}
+
+.hero-market-track span:first-child::before {
+  content: "";
+  margin-right: 0;
 }
 
 .hero-orbit {
@@ -448,6 +522,43 @@ body {
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes chartSweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.5;
+  }
+  46% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes heroDotPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 44%, transparent);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--success) 0%, transparent);
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
+@keyframes tapeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 
@@ -1670,6 +1781,24 @@ body {
     padding: 12px;
   }
 
+  .hero-trading-chart {
+    inset: 8px 8px 32px 8px;
+  }
+
+  .hero-market-tape {
+    height: 30px;
+  }
+
+  .hero-market-track {
+    gap: 14px;
+    padding-inline: 10px;
+    animation-duration: 20s;
+  }
+
+  .hero-market-track span {
+    font-size: 0.58rem;
+  }
+
   .hero-orbit {
     display: none;
   }
@@ -2146,6 +2275,25 @@ body {
     max-width: 160px;
     height: 160px;
     padding: 10px;
+  }
+
+  .hero-trading-chart {
+    inset: 6px 6px 28px 6px;
+  }
+
+  .hero-market-tape {
+    height: 26px;
+  }
+
+  .hero-market-track {
+    gap: 10px;
+    padding-inline: 8px;
+    animation-duration: 18s;
+  }
+
+  .hero-market-track span {
+    font-size: 0.52rem;
+    letter-spacing: 0.02em;
   }
 
   /* Features Section */

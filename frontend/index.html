@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Courtroom Trading - AI-Powered Market Analysis</title>
-    <link rel="stylesheet" href="./styles.css?v=20260416-3" />
+    <link rel="stylesheet" href="./styles.css?v=20260417-4" />
     <script src="./config.js?v=20260416-2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
@@ -27,8 +27,8 @@
 
       <section class="home-hero">
         <div class="hero-content">
-          <h1>AI-Powered Market Analysis</h1>
-          <p class="hero-subtitle">Bull vs Bear Arguments, Real-Time Verdicts, Powered by Intelligent Agents</p>
+          <h1>Where AI Debates Before You Trade</h1>
+          <p class="hero-subtitle">Two AI agents analyze market signals, argue opposing views, and deliver a structured, explainable verdict you can act on with confidence.</p>
           <div class="hero-features">
             <div class="feature-item">
               <span class="feature-icon">01</span>
@@ -43,20 +43,27 @@
               <span>Instant Verdicts</span>
             </div>
           </div>
-          <button id="get-started-button" type="button" class="btn-large">Get Started Now</button>
-          <p class="disclaimer-home">Agents may make mistakes. Not a SEBI registered broker. For educational purposes only.</p>
+          <button id="get-started-button" type="button" class="btn-large">Analyze Market Now</button>
         </div>
         <div class="hero-visual">
           <div class="hero-orbit one"></div>
           <div class="hero-orbit two"></div>
           <div class="hero-chart-placeholder">
-            <div class="hero-grid"></div>
-            <svg class="hero-line" viewBox="0 0 220 220" width="100%" height="100%" aria-hidden="true">
-              <polyline points="12,186 34,156 52,148 76,128 96,132 126,96 150,84 178,72 206,46"
-                fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <polyline points="12,196 34,188 52,176 76,164 96,168 126,148 150,132 178,112 206,96"
-                fill="none" stroke="color-mix(in srgb, currentColor 45%, transparent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <canvas id="hero-trading-chart" class="hero-trading-chart" aria-hidden="true"></canvas>
+            <div class="hero-market-tape" aria-hidden="true">
+              <div class="hero-market-track">
+                <span>US NIFTY <strong>+0.84%</strong></span>
+                <span>INDIA NIFTY 50 <strong>+1.42%</strong></span>
+                <span>BANK NIFTY <strong>+0.96%</strong></span>
+                <span>MCX GOLD <strong>+0.58%</strong></span>
+                <span>MCX SILVER <strong>+1.11%</strong></span>
+                <span>US NIFTY <strong>+0.84%</strong></span>
+                <span>INDIA NIFTY 50 <strong>+1.42%</strong></span>
+                <span>BANK NIFTY <strong>+0.96%</strong></span>
+                <span>MCX GOLD <strong>+0.58%</strong></span>
+                <span>MCX SILVER <strong>+1.11%</strong></span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -66,20 +73,20 @@
           <h2>Why Courtroom Trading?</h2>
           <div class="features-grid">
             <div class="feature-card">
-              <h3>Dual Agent System</h3>
-              <p>Bull and Bear agents argue different market perspectives with evidence-based reasoning</p>
+              <h3>Debate-Driven Intelligence</h3>
+              <p>Two specialized agents challenge each other before a final recommendation is produced.</p>
             </div>
             <div class="feature-card">
-              <h3>Real-Time Data</h3>
-              <p>Live market data analysis with technical indicators and historical tracking</p>
+              <h3>Live Signal Breakdown</h3>
+              <p>Price action, trend strength, and indicator alignment are analyzed in one structured flow.</p>
             </div>
             <div class="feature-card">
-              <h3>Memory Storage</h3>
-              <p>Agents learn from outcomes to improve decision-making over time</p>
+              <h3>Learns From Past Decisions</h3>
+              <p>Tracks previous outcomes to refine future reasoning and improve consistency.</p>
             </div>
             <div class="feature-card">
-              <h3>Transparent Verdicts</h3>
-              <p>Clear reasoning with confidence scores and argument breakdown</p>
+              <h3>Explainable Verdicts</h3>
+              <p>Every output includes confidence, rationale, and a transparent bull-vs-bear argument trail.</p>
             </div>
           </div>
         </div>
@@ -492,6 +499,6 @@
       </footer>
     </div>
 
-    <script src="./app.js?v=20260416-8"></script>
+    <script src="./app.js?v=20260417-5"></script>
   </body>
 </html>
