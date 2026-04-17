@@ -138,10 +138,10 @@ const heroTradingScenePlugin = {
     ctx.stroke();
 
     ctx.font = '700 12px "Space Grotesk", sans-serif';
-    ctx.textAlign = "right";
-    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
     ctx.fillStyle = labelColor;
-    ctx.fillText(label, chartArea.right - 4, chartArea.top + 6);
+    ctx.fillText(label, chartArea.left + 4, chartArea.bottom - 6);
     ctx.restore();
   }
 };
