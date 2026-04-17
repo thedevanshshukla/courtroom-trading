@@ -1171,27 +1171,41 @@ function openHistoryModal(card) {
     const modal = document.getElementById("history-modal");
     if (!modal) return;
 
-    // Populate modal with record data
-    const bullPoints = Array.isArray(record.bull_args) 
-      ? record.bull_args.map(arg => `<li>${arg}</li>`).join("")
-      : `<li>${record.bull_args || "N/A"}</li>`;
+    // Safely extract bull arguments - handle both array and string formats
+    const bullArgs = record.bull_args || [];
+    const bullPoints = Array.isArray(bullArgs) && bullArgs.length > 0
+      ? bullArgs.map(arg => `<li>${arg}</li>`).join("")
+      : "<li>No bullish arguments available</li>";
     
-    const bearPoints = Array.isArray(record.bear_args)
-      ? record.bear_args.map(arg => `<li>${arg}</li>`).join("")
-      : `<li>${record.bear_args || "N/A"}</li>`;
+    // Safely extract bear arguments - handle both array and string formats
+    const bearArgs = record.bear_args || [];
+    const bearPoints = Array.isArray(bearArgs) && bearArgs.length > 0
+      ? bearArgs.map(arg => `<li>${arg}</li>`).join("")
+      : "<li>No bearish arguments available</li>";
 
+    // Populate modal with record data using safe access
     document.getElementById("modal-decision").textContent = toDisplayVerdict(record.decision);
     document.getElementById("modal-confidence").textContent = `${(record.confidence * 100).toFixed(1)}%`;
     document.getElementById("modal-date").textContent = new Date(record.created_at).toLocaleString();
-    document.getElementById("modal-price").textContent = record.feature_snapshot?.price || "N/A";
-    document.getElementById("modal-rsi").textContent = record.feature_snapshot?.rsi || "N/A";
-    document.getElementById("modal-reasoning").textContent = record.reasoning || "No reasoning provided";
+    
+    // Safe access to nested feature_snapshot
+    const price = record.feature_snapshot?.price ?? record.feature_snapshot?.["price"] ?? "N/A";
+    const rsi = record.feature_snapshot?.rsi ?? record.feature_snapshot?.["rsi"] ?? "N/A";
+    document.getElementById("modal-price").textContent = price;
+    document.getElementById("modal-rsi").textContent = rsi;
+    
+    // Safe access to reasoning
+    const reasoning = record.reasoning || record.final_reasoning || "No reasoning provided";
+    document.getElementById("modal-reasoning").textContent = reasoning;
+    
+    // Set HTML for arguments lists
     document.getElementById("modal-bull-args").innerHTML = bullPoints;
     document.getElementById("modal-bear-args").innerHTML = bearPoints;
 
     modal.classList.remove("hidden");
   } catch (error) {
     console.error("Error opening history modal:", error);
+    alert("Error displaying trade details. Please try again.");
   }
 }
 

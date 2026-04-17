@@ -134,6 +134,9 @@ class TradingDecisionEngine:
                 confidence=decision.confidence,
                 feature_snapshot=hydrated_input.features.to_dict(),
                 signal_snapshot=hydrated_input.derived_signals.to_dict(),
+                bull_args=[arg.claim for arg in bull_output.arguments] if bull_output else [],
+                bear_args=[arg.claim for arg in bear_output.arguments] if bear_output else [],
+                reasoning=decision.final_reasoning,
             )
         )
         

@@ -188,6 +188,9 @@ class MemoryRecord:
     outcome: str = "PENDING"
     feature_snapshot: dict[str, Any] = field(default_factory=dict)
     signal_snapshot: dict[str, Any] = field(default_factory=dict)
+    bull_args: list[str] = field(default_factory=list)
+    bear_args: list[str] = field(default_factory=list)
+    reasoning: str = ""
     record_id: str = field(default_factory=lambda: uuid4().hex)
     created_at: str = field(
         default_factory=lambda: datetime.now(UTC).isoformat().replace("+00:00", "Z")
