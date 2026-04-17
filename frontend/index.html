@@ -14,10 +14,10 @@
     <div class="page-container" id="home-page">
       <nav class="navbar">
         <div class="navbar-content">
-          <div class="logo">
-            <span class="logo-icon">CT</span>
-            <span class="logo-text">Courtroom Trading</span>
+          <div class="navbar-start">
+            <span id="welcome-message" class="welcome-text hidden">Welcome</span>
           </div>
+          <button class="navbar-center-brand navbar-brand-link" type="button">Courtroom Trading</button>
           <div class="nav-actions">
             <button id="theme-toggle-home" type="button" class="nav-button theme-toggle" aria-label="Toggle theme">☾</button>
             <button id="login-button-home" type="button" class="nav-button primary">Sign In</button>
@@ -97,10 +97,10 @@
     <div class="page-container hidden" id="auth-page">
       <nav class="navbar">
         <div class="navbar-content">
-          <div class="logo">
-            <span class="logo-icon">CT</span>
-            <span class="logo-text">Courtroom Trading</span>
+          <div class="navbar-start">
+            <span id="welcome-message" class="welcome-text hidden">Welcome</span>
           </div>
+          <button class="navbar-center-brand navbar-brand-link" type="button">Courtroom Trading</button>
           <div class="nav-actions">
             <button id="theme-toggle-auth" type="button" class="nav-button theme-toggle" aria-label="Toggle theme">☾</button>
             <button id="back-to-home-button" type="button" class="nav-button">← Back</button>
@@ -170,18 +170,18 @@
     <div class="page-container hidden" id="dashboard-page">
       <nav class="navbar">
         <div class="navbar-content">
-          <div class="logo">
-            <span class="logo-icon">CT</span>
-            <span class="logo-text">Courtroom Trading</span>
+          <div class="navbar-start">
+            <span id="welcome-message" class="welcome-text hidden">Welcome</span>
           </div>
+          <button class="navbar-center-brand navbar-brand-link" type="button">Courtroom Trading</button>
           <div class="nav-actions">
             <button id="theme-toggle-dashboard" type="button" class="nav-button theme-toggle" aria-label="Toggle theme">☾</button>
-            <div id="user-info" class="user-info hidden"></div>
             <button id="logout-button" type="button" class="nav-button logout-btn hidden">Logout</button>
           </div>
         </div>
       </nav>
 
+      <div class="dashboard-shell">
       <div class="dashboard-container">
         <!-- Left Sidebar -->
         <aside class="dashboard-sidebar">
@@ -481,6 +481,7 @@
             </div>
           </section>
         </main>
+      </div>
       </div>
 
       <footer class="footer">

@@ -562,17 +562,18 @@ function updateNavbarButton() {
 
 function renderUser() {
   if (!state.auth.user) {
-    elements.userInfo?.classList.add("hidden");
+    document.querySelectorAll(".welcome-text").forEach(el => el.classList.add("hidden"));
     elements.logoutButton?.classList.add("hidden");
     updateNavbarButton();
     return;
   }
 
-  elements.userInfo?.classList.remove("hidden");
+  document.querySelectorAll(".welcome-text").forEach(el => {
+    el.classList.remove("hidden");
+    const firstName = state.auth.user.name.split(" ")[0];
+    el.textContent = `Welcome, ${firstName}`;
+  });
   elements.logoutButton?.classList.remove("hidden");
-  if (elements.userInfo) {
-    elements.userInfo.textContent = state.auth.user.name;
-  }
   updateNavbarButton();
 }
 
@@ -1637,6 +1638,13 @@ function bindEvents() {
   document.querySelectorAll(".logo").forEach((logo) => {
     logo.addEventListener("click", (e) => {
       e.preventDefault();
+      goToPage("home-page");
+    });
+  });
+
+  // Center brand click handler - redirect to home
+  document.querySelectorAll(".navbar-brand-link").forEach((brand) => {
+    brand.addEventListener("click", () => {
       goToPage("home-page");
     });
   });
