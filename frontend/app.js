@@ -118,7 +118,10 @@ const heroTradingScenePlugin = {
     const change = last.close - previous.close;
     const changePercent = previous.close !== 0 ? (change / previous.close) * 100 : 0;
     const isUp = change >= 0;
-    const label = `${last.close.toFixed(2)} ${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${changePercent.toFixed(2)}%)`;
+    const isCompact = chart.width < 420 || chart.height < 240;
+    const label = isCompact
+      ? `${last.close.toFixed(2)} ${isUp ? "+" : ""}${change.toFixed(2)}`
+      : `${last.close.toFixed(2)} ${isUp ? "+" : ""}${change.toFixed(2)} (${isUp ? "+" : ""}${changePercent.toFixed(2)}%)`;
     const labelColor = isUp ? theme.bull : theme.bear;
 
     ctx.setLineDash([5, 5]);
@@ -137,11 +140,11 @@ const heroTradingScenePlugin = {
     ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    ctx.font = '700 12px "Space Grotesk", sans-serif';
+    ctx.font = isCompact ? '700 10px "Space Grotesk", sans-serif' : '700 12px "Space Grotesk", sans-serif';
     ctx.textAlign = "left";
-    ctx.textBaseline = "bottom";
+    ctx.textBaseline = "top";
     ctx.fillStyle = labelColor;
-    ctx.fillText(label, chartArea.left + 4, chartArea.bottom - 6);
+    ctx.fillText(label, chartArea.left + 4, chartArea.top + 6);
     ctx.restore();
   }
 };

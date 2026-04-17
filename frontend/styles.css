@@ -1782,7 +1782,7 @@ body {
   }
 
   .hero-trading-chart {
-    inset: 8px 8px 32px 8px;
+    inset: 12px 12px 40px 12px;
   }
 
   .hero-market-tape {
@@ -2278,7 +2278,7 @@ body {
   }
 
   .hero-trading-chart {
-    inset: 6px 6px 28px 6px;
+    inset: 10px 10px 38px 10px;
   }
 
   .hero-market-tape {
