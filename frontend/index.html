@@ -414,6 +414,64 @@
             <div id="history-list" class="history-grid">
               <p class="muted">No history yet. Run an analysis to get started.</p>
             </div>
+
+            <!-- History Modal -->
+            <div id="history-modal" class="modal hidden">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3>Trade Analysis Details</h3>
+                  <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <div class="modal-section">
+                    <h4>Decision</h4>
+                    <p id="modal-decision" class="modal-verdict"></p>
+                    <div class="modal-row">
+                      <div>
+                        <strong>Confidence:</strong> <span id="modal-confidence">-</span>
+                      </div>
+                      <div>
+                        <strong>Date:</strong> <span id="modal-date">-</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal-section">
+                    <h4>Market Data</h4>
+                    <div class="modal-row">
+                      <div>
+                        <strong>Price:</strong> <span id="modal-price">-</span>
+                      </div>
+                      <div>
+                        <strong>RSI:</strong> <span id="modal-rsi">-</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal-section">
+                    <h4>Agent Reasoning</h4>
+                    <p id="modal-reasoning">-</p>
+                  </div>
+
+                  <div class="modal-section">
+                    <h4>Bullish Arguments</h4>
+                    <ul id="modal-bull-args" class="modal-args-list">
+                      <li>-</li>
+                    </ul>
+                  </div>
+
+                  <div class="modal-section">
+                    <h4>Bearish Arguments</h4>
+                    <ul id="modal-bear-args" class="modal-args-list">
+                      <li>-</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn-secondary" onclick="closeHistoryModal()">Close</button>
+                </div>
+              </div>
+            </div>
           </section>
         </main>
       </div>

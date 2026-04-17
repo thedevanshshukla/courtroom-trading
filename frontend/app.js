@@ -551,10 +551,20 @@ function renderChartsFromState() {
   });
 }
 
+function updateNavbarButton() {
+  // Update the login button text based on auth state
+  if (state.auth.token && elements.loginButtonHome) {
+    elements.loginButtonHome.textContent = "Dashboard";
+  } else if (elements.loginButtonHome) {
+    elements.loginButtonHome.textContent = "Sign In";
+  }
+}
+
 function renderUser() {
   if (!state.auth.user) {
     elements.userInfo?.classList.add("hidden");
     elements.logoutButton?.classList.add("hidden");
+    updateNavbarButton();
     return;
   }
 
@@ -563,6 +573,7 @@ function renderUser() {
   if (elements.userInfo) {
     elements.userInfo.textContent = state.auth.user.name;
   }
+  updateNavbarButton();
 }
 
 async function hydrateSession() {
@@ -1100,7 +1111,7 @@ async function loadHistory() {
     }
 
     elements.historyList.innerHTML = payload.records.map((record) => `
-      <div class="history-card">
+      <div class="history-card" data-record-id="${record.record_id}" style="cursor: pointer;">
         <div class="history-verdict">${record.decision}</div>
         <div class="history-info">
           <p><strong>Price: ${record.feature_snapshot.price}</strong> | RSI: ${record.feature_snapshot.rsi}</p>
@@ -1109,13 +1120,16 @@ async function loadHistory() {
             <span>${new Date(record.created_at).toLocaleDateString()}</span>
           </div>
         </div>
-        <div class="outcome-buttons">
-          <button class="outcome-btn profit" data-record-id="${record.record_id}" data-outcome="PROFIT">Profit</button>
-          <button class="outcome-btn loss" data-record-id="${record.record_id}" data-outcome="LOSS">Loss</button>
-          <button class="outcome-btn breakeven" data-record-id="${record.record_id}" data-outcome="BREAKEVEN">Break Even</button>
+        <div class="history-record-data" style="display: none;">
+          ${JSON.stringify(record)}
         </div>
       </div>
     `).join("");
+
+    // Add click handler to history cards
+    document.querySelectorAll(".history-card").forEach((card) => {
+      card.addEventListener("click", () => openHistoryModal(card));
+    });
   } catch (error) {
     elements.historyList.innerHTML = `<p class="muted">Error loading history: ${error.message}</p>`;
   }
@@ -1145,6 +1159,46 @@ async function clearHistory() {
   } finally {
     elements.clearHistory.disabled = false;
     elements.clearHistory.textContent = "Clear All";
+  }
+}
+
+function openHistoryModal(card) {
+  const recordData = card.querySelector(".history-record-data");
+  if (!recordData) return;
+
+  try {
+    const record = JSON.parse(recordData.textContent);
+    const modal = document.getElementById("history-modal");
+    if (!modal) return;
+
+    // Populate modal with record data
+    const bullPoints = Array.isArray(record.bull_args) 
+      ? record.bull_args.map(arg => `<li>${arg}</li>`).join("")
+      : `<li>${record.bull_args || "N/A"}</li>`;
+    
+    const bearPoints = Array.isArray(record.bear_args)
+      ? record.bear_args.map(arg => `<li>${arg}</li>`).join("")
+      : `<li>${record.bear_args || "N/A"}</li>`;
+
+    document.getElementById("modal-decision").textContent = toDisplayVerdict(record.decision);
+    document.getElementById("modal-confidence").textContent = `${(record.confidence * 100).toFixed(1)}%`;
+    document.getElementById("modal-date").textContent = new Date(record.created_at).toLocaleString();
+    document.getElementById("modal-price").textContent = record.feature_snapshot?.price || "N/A";
+    document.getElementById("modal-rsi").textContent = record.feature_snapshot?.rsi || "N/A";
+    document.getElementById("modal-reasoning").textContent = record.reasoning || "No reasoning provided";
+    document.getElementById("modal-bull-args").innerHTML = bullPoints;
+    document.getElementById("modal-bear-args").innerHTML = bearPoints;
+
+    modal.classList.remove("hidden");
+  } catch (error) {
+    console.error("Error opening history modal:", error);
+  }
+}
+
+function closeHistoryModal() {
+  const modal = document.getElementById("history-modal");
+  if (modal) {
+    modal.classList.add("hidden");
   }
 }
 
@@ -1471,8 +1525,26 @@ function toggleDetails() {
 }
 
 function bindEvents() {
+  // Logo click handler - redirect to home
+  document.querySelectorAll(".logo").forEach((logo) => {
+    logo.addEventListener("click", (e) => {
+      e.preventDefault();
+      goToPage("home-page");
+    });
+  });
+
+  // Auth-aware navbar button
   elements.getStartedButton?.addEventListener("click", () => goToPage("auth-page"));
-  elements.loginButtonHome?.addEventListener("click", () => goToPage("auth-page"));
+  
+  // Update loginButtonHome to be auth-aware
+  elements.loginButtonHome?.addEventListener("click", () => {
+    if (state.auth.token) {
+      goToPage("dashboard-page");
+    } else {
+      goToPage("auth-page");
+    }
+  });
+  
   elements.backToHomeButton?.addEventListener("click", () => goToPage("home-page"));
 
   elements.themeToggleHome?.addEventListener("click", cycleTheme);
@@ -1554,20 +1626,15 @@ function bindEvents() {
   elements.refreshHistory?.addEventListener("click", loadHistory);
   elements.clearHistory?.addEventListener("click", clearHistory);
 
-  document.addEventListener("click", async (event) => {
-    const button = event.target.closest(".outcome-btn");
-    if (!button) return;
-
-    const recordId = button.dataset.recordId;
-    const outcome = button.dataset.outcome;
-    if (!recordId || !outcome) return;
-
-    await handleOutcomeUpdate(recordId, outcome);
-  });
-
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.ui.expandedChart) {
-      closeExpandedChart();
+    if (event.key === "Escape") {
+      if (state.ui.expandedChart) {
+        closeExpandedChart();
+      }
+      const historyModal = document.getElementById("history-modal");
+      if (historyModal && !historyModal.classList.contains("hidden")) {
+        closeHistoryModal();
+      }
     }
   });
 
