@@ -2,77 +2,64 @@
 
 A multi-agent AI decision system that simulates real-world trading reasoning using a **Bull–Bear–Judge architecture**.
 
-Instead of relying on black-box predictions, this system focuses on **explainable decision-making, risk-aware logic, and structured reasoning** to determine whether a trade should be taken.
+Instead of relying on black-box predictions, this system focuses on **decision quality, risk awareness, and explainable reasoning** to determine whether a trade should be taken.
 
 ---
 
-## 🚀 Why This Project Exists
+## 🚀 Why This Exists
 
 Most trading systems try to answer:
 
-> “What will the price be?”
+> *“What will the price be?”*
 
-This system answers a more practical question:
+This system answers a more practical and actionable question:
 
 > **“Is this trade worth taking?”**
 
 It prioritizes:
 
-* Decision quality over prediction accuracy
+* Decision quality over raw prediction accuracy
 * Risk management over blind execution
-* Explainability over black-box models
+* Explainability over opaque models
 
 ---
 
-## 🧠 System Architecture
+## 🧠 Core Idea
 
-The system follows a courtroom-style pipeline:
+Markets are uncertain. Signals conflict.
 
-```text
-Market Data → Bull Agent → Bear Agent → Judge → Final Decision
-```
+So instead of trusting a single model, this system simulates **structured disagreement**:
 
-### Components
+* A **Bull agent** argues for the trade
+* A **Bear agent** argues against it
+* A **Judge** evaluates both sides using deterministic logic
 
-* **Bull Agent**
-
-  * Generates arguments supporting a trade
-
-* **Bear Agent**
-
-  * Generates counter-arguments
-
-* **Judge (Deterministic Engine)**
-
-  * Validates signals
-  * Scores arguments
-  * Applies risk constraints
-
-* **Decision Output**
-
-  * Verdict (Trade / No Trade / Neutral)
-  * Confidence (Low / Medium / High)
-  * Structured reasoning
-  * Optional trade setup (entry, stop loss, target)
+👉 The result is not just a prediction — but a **justified decision**
 
 ---
 
 ## ⚙️ How It Works
 
+```text
+Market Data → Bull Agent → Bear Agent → Judge → Final Decision
+```
+
+### Pipeline
+
 1. Market data is processed (price, RSI, moving averages, volume)
 2. Bull and Bear agents generate structured arguments
-3. Backend validates arguments (removes weak or invalid signals)
-4. Judge evaluates:
+3. Backend validates signals (filters weak or invalid claims)
+4. Judge evaluates based on:
 
    * Momentum strength
    * Trend alignment
    * ATR-based volatility
    * Risk–reward ratio
-5. System:
+5. System decides to:
 
-   * Rejects weak trades
-   * Suppresses decisions in unstable markets
-   * Suggests opportunities only when justified
+   * Execute trade
+   * Reject trade
+   * Suggest conditional opportunity
 
 ---
 
@@ -81,15 +68,15 @@ Market Data → Bull Agent → Bear Agent → Judge → Final Decision
 * ⚖️ Multi-agent reasoning (Bull vs Bear vs Judge)
 * 🧠 Explainable AI decisions (no black-box outputs)
 * 📉 ATR-based volatility modeling
-* 🎯 Risk–reward validation (minimum threshold enforced)
-* 🚫 Intelligent “No Trade” detection
-* 💡 Conditional opportunity suggestions
+* 🎯 Risk–reward validation (filters low-quality trades)
+* 🚫 Intelligent **No Trade** detection
+* 💡 Conditional opportunity suggestions (entry, stop-loss, target)
 * 📊 Confidence scoring (Low / Medium / High)
 * ⚠️ Market instability suppression
+* 🗄️ MongoDB-backed history with full decision reasoning
 * 🔐 Google OAuth authentication (with demo mode)
-* 🗄️ MongoDB-backed history and memory bias
-* 📈 Real-time charts (Price, RSI, Moving Averages, Volume)
-* 🎨 Dark/Light theme with improved chart readability
+* 📈 Interactive charts (Price, RSI, Moving Averages, Volume)
+* 🎨 Dark/Light theme with optimized readability
 
 ---
 
@@ -148,8 +135,8 @@ courtroom-trading/
 │   ├── repository.py       # DB interaction
 │   └── auth.py             # Authentication logic
 │
-├── tests/                  # Unit tests
-├── docker-compose.yml      # MongoDB setup
+├── tests/
+├── docker-compose.yml
 ├── requirements.txt
 └── README.md
 ```
@@ -168,7 +155,7 @@ window.COURTROOM_CONFIG = {
 };
 ```
 
-> Note: Google Client ID is public and safe to expose.
+> Google Client ID is public and safe to expose.
 
 ---
 
@@ -214,25 +201,25 @@ http://127.0.0.1:3000
 ## 🔐 Security
 
 * No credentials are stored in the repository
-* All secrets must be stored in `.env`
+* All sensitive values must be stored in `.env`
 * Never commit:
 
   * API keys
   * JWT secrets
-  * database URIs
+  * Database URIs
 
 ---
 
 ## 🚀 Future Scope
 
-* 📊 Backtesting system for historical evaluation
+* 📊 Backtesting engine for historical evaluation
 * ⚡ Real-time market data integration
 * 🔔 Alerts for high-confidence opportunities
-* 🤖 Lightweight ML for signal enhancement (not replacing decision logic)
-* 🧠 Extending architecture to:
+* 🤖 Lightweight ML for signal enhancement (without replacing explainable logic)
+* 🧠 Extending multi-agent architecture to:
 
   * Recommendation systems
-  * Strategic decision engines
+  * Strategic decision systems
 
 ---
 
@@ -240,7 +227,7 @@ http://127.0.0.1:3000
 
 This project is for educational purposes only.
 
-It does not provide financial advice. Trading involves risk.
+It does **not** provide financial advice. Trading involves risk.
 
 ---
 
@@ -248,4 +235,4 @@ It does not provide financial advice. Trading involves risk.
 
 This system is not built to predict the market.
 
-It is built to **decide intelligently under uncertainty**.
+It is built to **make better decisions under uncertainty**.
