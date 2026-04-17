@@ -122,6 +122,21 @@ class TradingDecisionEngine:
                 system_input=hydrated_input,
             )
         
+        def _extract_side_claims(payload: JudgeDecision, side: str) -> list[str]:
+            validated = [item.claim for item in payload.validated_arguments if item.side == side]
+            if validated:
+                return validated
+            return []
+
+        bull_claims = [arg.claim for arg in bull_output.arguments] if bull_output else []
+        bear_claims = [arg.claim for arg in bear_output.arguments] if bear_output else []
+
+        # Fall back to judge-validated arguments when agent argument arrays are empty.
+        if not bull_claims:
+            bull_claims = _extract_side_claims(decision, "BULL")
+        if not bear_claims:
+            bear_claims = _extract_side_claims(decision, "BEAR")
+
         # Store decision record and update cache
         memory_record = await self.repository.store(
             MemoryRecord(
@@ -134,8 +149,25 @@ class TradingDecisionEngine:
                 confidence=decision.confidence,
                 feature_snapshot=hydrated_input.features.to_dict(),
                 signal_snapshot=hydrated_input.derived_signals.to_dict(),
-                bull_args=[arg.claim for arg in bull_output.arguments] if bull_output else [],
-                bear_args=[arg.claim for arg in bear_output.arguments] if bear_output else [],
+                bullish_factors=bull_claims,
+                bearish_factors=bear_claims,
+                final_reasoning=decision.final_reasoning,
+                decision_details=decision.to_dict(),
+                suggested_setup={
+                    "trade_possible": decision.trade_possible,
+                    "suggested_trade_price": decision.suggested_trade_price,
+                    "suggested_trade_range_low": decision.suggested_trade_range_low,
+                    "suggested_trade_range_high": decision.suggested_trade_range_high,
+                    "suggested_entry_price": decision.suggested_entry_price,
+                    "suggested_stop_loss": decision.suggested_stop_loss,
+                    "suggested_target_price": decision.suggested_target_price,
+                    "suggested_risk_reward": decision.suggested_risk_reward,
+                    "suggested_price_reason": decision.suggested_price_reason,
+                    "suggestion_note": decision.suggestion_note,
+                    "opportunity_confidence": decision.opportunity_confidence,
+                },
+                bull_args=bull_claims,
+                bear_args=bear_claims,
                 reasoning=decision.final_reasoning,
             )
         )

@@ -188,6 +188,11 @@ class MemoryRecord:
     outcome: str = "PENDING"
     feature_snapshot: dict[str, Any] = field(default_factory=dict)
     signal_snapshot: dict[str, Any] = field(default_factory=dict)
+    bullish_factors: list[str] = field(default_factory=list)
+    bearish_factors: list[str] = field(default_factory=list)
+    final_reasoning: str = ""
+    suggested_setup: dict[str, Any] = field(default_factory=dict)
+    decision_details: dict[str, Any] = field(default_factory=dict)
     bull_args: list[str] = field(default_factory=list)
     bear_args: list[str] = field(default_factory=list)
     reasoning: str = ""

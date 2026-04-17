@@ -1097,6 +1097,56 @@ function renderSummary(payload, bullArgs = [], bearArgs = []) {
   `;
 }
 
+function resolveHistoryValue(record, paths) {
+  for (const path of paths) {
+    const value = path.split(".").reduce((current, key) => current?.[key], record);
+    if (value !== undefined && value !== null) {
+      return value;
+    }
+  }
+  return null;
+}
+
+function normalizeHistoryArguments(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => {
+        if (typeof item === "string") return item.trim();
+        if (item && typeof item === "object") {
+          return String(item.claim || item.text || item.reason || item.label || "").trim();
+        }
+        return "";
+      })
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(/\n|\|/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderHistoryArgumentList(items, emptyLabel) {
+  if (!items.length) {
+    return `<li>${emptyLabel}</li>`;
+  }
+
+  return items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+}
+
 async function loadHistory() {
   if (!state.auth.token) {
     elements.historyList.innerHTML = '<p class="muted">Sign in to view analysis history.</p>';
@@ -1171,36 +1221,80 @@ function openHistoryModal(card) {
     const modal = document.getElementById("history-modal");
     if (!modal) return;
 
-    // Safely extract bull arguments - handle both array and string formats
-    const bullArgs = record.bull_args || [];
-    const bullPoints = Array.isArray(bullArgs) && bullArgs.length > 0
-      ? bullArgs.map(arg => `<li>${arg}</li>`).join("")
-      : "<li>No bullish arguments available</li>";
-    
-    // Safely extract bear arguments - handle both array and string formats
-    const bearArgs = record.bear_args || [];
-    const bearPoints = Array.isArray(bearArgs) && bearArgs.length > 0
-      ? bearArgs.map(arg => `<li>${arg}</li>`).join("")
-      : "<li>No bearish arguments available</li>";
+    const bullArgs = normalizeHistoryArguments(
+      resolveHistoryValue(record, [
+        "bullish_factors",
+        "bull_args",
+        "decision_details.bullish_factors",
+        "decision_details.bull_args",
+        "decision.bullish_factors",
+        "decision.bull_args",
+        "trade.decision.bullish_factors",
+        "trade.decision.bull_args",
+        "decision.validated_arguments",
+        "decision_details.validated_arguments"
+      ])
+    );
+
+    const bearArgs = normalizeHistoryArguments(
+      resolveHistoryValue(record, [
+        "bearish_factors",
+        "bear_args",
+        "decision_details.bearish_factors",
+        "decision_details.bear_args",
+        "decision.bearish_factors",
+        "decision.bear_args",
+        "trade.decision.bearish_factors",
+        "trade.decision.bear_args",
+        "decision.rejected_arguments",
+        "decision_details.rejected_arguments"
+      ])
+    );
+
+    const reasoning = resolveHistoryValue(record, [
+      "final_reasoning",
+      "reasoning",
+      "decision_details.final_reasoning",
+      "decision.final_reasoning",
+      "trade.decision.final_reasoning"
+    ]) || "No data available";
+
+    const setup = resolveHistoryValue(record, [
+      "suggested_setup",
+      "decision_details.suggested_setup",
+      "decision.suggested_setup",
+      "trade.decision.suggested_setup"
+    ]) || null;
 
     // Populate modal with record data using safe access
-    document.getElementById("modal-decision").textContent = toDisplayVerdict(record.decision);
-    document.getElementById("modal-confidence").textContent = `${(record.confidence * 100).toFixed(1)}%`;
-    document.getElementById("modal-date").textContent = new Date(record.created_at).toLocaleString();
+    const decisionValue = resolveHistoryValue(record, ["decision.verdict", "decision", "decision_details.verdict", "trade.decision.verdict", "trade.decision"]);
+    const confidenceValue = Number(resolveHistoryValue(record, ["confidence", "decision.confidence", "decision_details.confidence", "trade.decision.confidence"])) || 0;
+    document.getElementById("modal-decision").textContent = toDisplayVerdict(decisionValue);
+    document.getElementById("modal-confidence").textContent = `${(confidenceValue * 100).toFixed(1)}%`;
+    document.getElementById("modal-date").textContent = new Date(record.created_at || record.timestamp || Date.now()).toLocaleString();
     
     // Safe access to nested feature_snapshot
-    const price = record.feature_snapshot?.price ?? record.feature_snapshot?.["price"] ?? "N/A";
-    const rsi = record.feature_snapshot?.rsi ?? record.feature_snapshot?.["rsi"] ?? "N/A";
+    const price = resolveHistoryValue(record, ["feature_snapshot.price", "decision.feature_snapshot.price", "trade.feature_snapshot.price"]) ?? "N/A";
+    const rsi = resolveHistoryValue(record, ["feature_snapshot.rsi", "decision.feature_snapshot.rsi", "trade.feature_snapshot.rsi"]) ?? "N/A";
     document.getElementById("modal-price").textContent = price;
     document.getElementById("modal-rsi").textContent = rsi;
     
     // Safe access to reasoning
-    const reasoning = record.reasoning || record.final_reasoning || "No reasoning provided";
     document.getElementById("modal-reasoning").textContent = reasoning;
     
     // Set HTML for arguments lists
-    document.getElementById("modal-bull-args").innerHTML = bullPoints;
-    document.getElementById("modal-bear-args").innerHTML = bearPoints;
+    document.getElementById("modal-bull-args").innerHTML = renderHistoryArgumentList(bullArgs, "No data available");
+    document.getElementById("modal-bear-args").innerHTML = renderHistoryArgumentList(bearArgs, "No data available");
+
+    const setupList = document.getElementById("modal-setup-list");
+    if (setupList) {
+      const setupLines = setup && typeof setup === "object"
+        ? Object.entries(setup)
+            .filter(([, value]) => value !== null && value !== undefined && value !== "")
+            .map(([key, value]) => `${key.replace(/_/g, " ")}: ${value}`)
+        : [];
+      setupList.innerHTML = renderHistoryArgumentList(setupLines, "No data available");
+    }
 
     modal.classList.remove("hidden");
   } catch (error) {

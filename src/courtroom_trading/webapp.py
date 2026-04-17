@@ -380,7 +380,42 @@ def create_app(
         user: AuthenticatedUser = Depends(current_user),
     ) -> dict[str, object]:
         records = await engine.list_history(user.user_id, limit=min(limit, 50))
-        return {"records": [record.to_dict() for record in records]}
+        payload_records: list[dict[str, object]] = []
+        for record in records:
+            item = record.to_dict()
+
+            # Preserve compatibility while ensuring required fields are always present.
+            item.setdefault("bullish_factors", item.get("bull_args", []))
+            item.setdefault("bearish_factors", item.get("bear_args", []))
+            item.setdefault("final_reasoning", item.get("reasoning", ""))
+            item.setdefault("decision_details", {})
+
+            details = item.get("decision_details") if isinstance(item.get("decision_details"), dict) else {}
+
+            if not item.get("bullish_factors") and isinstance(details.get("validated_arguments"), list):
+                item["bullish_factors"] = [
+                    str(arg.get("claim", "")).strip()
+                    for arg in details["validated_arguments"]
+                    if isinstance(arg, dict) and str(arg.get("side", "")).upper() == "BULL" and str(arg.get("claim", "")).strip()
+                ]
+
+            if not item.get("bearish_factors") and isinstance(details.get("validated_arguments"), list):
+                item["bearish_factors"] = [
+                    str(arg.get("claim", "")).strip()
+                    for arg in details["validated_arguments"]
+                    if isinstance(arg, dict) and str(arg.get("side", "")).upper() == "BEAR" and str(arg.get("claim", "")).strip()
+                ]
+
+            if not item.get("bearish_factors") and isinstance(details.get("rejected_arguments"), list):
+                item["bearish_factors"] = [
+                    str(arg.get("reason", "")).strip()
+                    for arg in details["rejected_arguments"]
+                    if isinstance(arg, dict) and str(arg.get("side", "")).upper() == "BEAR" and str(arg.get("reason", "")).strip()
+                ]
+
+            payload_records.append(item)
+
+        return {"records": payload_records}
 
     @app.delete("/api/history")
     async def clear_history(
